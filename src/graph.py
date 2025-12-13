@@ -1,0 +1,1 @@
+# Graf yapısı (adj list / matrix)

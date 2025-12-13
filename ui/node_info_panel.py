@@ -1,0 +1,1 @@
+# Node tıklanınca çıkan bilgiler
