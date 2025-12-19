@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 class Node:
     def __init__(self, id, ozelliklerMap=None):
@@ -27,3 +28,11 @@ class Node:
     
     #kullanıcı düğümünü temsil etmek için kullanılır.
     #kullanıcı düğüme tıklayınca düğüme gösterilecek olan bilgiyi temsil eder
+=======
+class Node:
+    def __init__(self, id, name, properties=None):
+        self.id = id
+        self.name = name
+        self.properties = properties or {}
+        self.neighbors = []
+>>>>>>> 4030ba3 (DFS Algrorithm has been loaded)
