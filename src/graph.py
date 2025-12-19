@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-
-import math
-import json
-import csv
-import os
-from node import Node
-from edge import Edge
-class Graph:
-    def __init__(self):
-        self.nodes = {} 
-        self.edges = []
-        self.AGIRLIK_ANAHTARLARI = ['Aktiflik', 'Etkilesim', 'Baglanti']
-    def _dinamikMaliyetHesapla(self, dugumI, dugumJ):
-        pass
-#Tüm düğümleri ve kenarları yöneten ana veri yapısı sınıfı.
-
-
-# Graf yapısı (adj list / matrix)
-=======
 import json
 from src.node import Node
 
@@ -52,4 +32,3 @@ class Graph:
             self.add_edge(edge['source'], edge['target'])
 
         print(f"Graf yüklendi: {len(self.nodes)} düğüm.")
->>>>>>> 4030ba3 (DFS Algrorithm has been loaded)
