@@ -61,7 +61,7 @@ for i, (node_id, centrality) in enumerate(top5, start=1):
 """
 from src.graph import Graph
 from algorithms.welsh_powell import WelshPowell
-
+from ui.main_window import MainWindow
 graph = Graph()
 graph.load_from_json("data_samples/small_data.json")
 
@@ -83,3 +83,13 @@ else:
     for node_id, color in colors.items():
         node = graph.nodes[node_id]
         print(f"{node_id:<5}{node.name:<10}{str(node.neighbors):<20}{color}")
+
+
+
+
+def main():
+    app = MainWindow()
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()

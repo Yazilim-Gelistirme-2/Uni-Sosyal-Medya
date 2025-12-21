@@ -1,23 +1,17 @@
 class DFS:
-    def __init__(self, graph):
-        self.graph = graph
-        self.visited = set()
-        self.path = []
+    @staticmethod
+    def run(graph, start_id):
+        visited = set()
+        stack = [start_id]
+        order = []
 
-    def solve(self, start_node):
-        self.visited.clear()
-        self.path.clear()
+        while stack:
+            u = stack.pop()
+            if u not in visited:
+                visited.add(u)
+                order.append(u)
+                for v in reversed(graph.nodes[u].neighbors):
+                    if v not in visited:
+                        stack.append(v)
 
-        if start_node in self.graph.nodes:
-            self._traverse(start_node)
-        return self.path
-
-    def _traverse(self, node_id):
-        self.visited.add(node_id)
-
-        node = self.graph.nodes[node_id]
-        self.path.append(node)
-
-        for neighbor in node.neighbors:
-            if neighbor not in self.visited:
-                self._traverse(neighbor)
+        return order
