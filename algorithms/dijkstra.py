@@ -1,61 +1,42 @@
-
-from temelAlgoritma import TemelAlgoritma
 import heapq
 import time
+from temelAlgoritma import temelAlgoritma
 
-class Dijkstra(TemelAlgoritma):
-
-    def calistir(self, baslangicID, hedefID):
+class djikstra(temelAlgoritma):
+    def calistir(self, baslangic, hedef):
+        t1 = time.time()
         
-        baslangicSuresi = time.time()
+        ids = [n['id'] for n in self.graf['nodes']]
+        adj = {n: [] for n in ids}
+        for e in self.graf['edges']:
+            adj[e['source']].append(e['target'])
+            adj[e['target']].append(e['source'])
+
+        mesafeler = {n: float('inf') for n in ids}
+        mesafeler[baslangic] = 0
+        nereden = {n: None for n in ids}
+        pq = [(0, baslangic)]
+
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d > mesafeler[u]: continue
+            if u == hedef: break
+
+            for v in adj[u]:
+                if mesafeler[u] + 1 < mesafeler[v]:
+                    mesafeler[v] = mesafeler[u] + 1
+                    nereden[v] = u
+                    heapq.heappush(pq, (mesafeler[v], v))
+
+        yol = []
+        curr = hedef
+        if mesafeler[hedef] == float('inf'):
+            return {"mesaj": "Yol bulunamadı", "sure": self.sure_olc(t1)}
+
+        while curr is not None:
+            n = next(x for x in self.graf['nodes'] if x['id'] == curr)
+            yol.append(n['name'])
+            curr = nereden[curr]
         
-        if baslangicID not in self.graf.nodes or hedefID not in self.graf.nodes:
-             
-             return {"Sonuclar": [], "Mesafe": float('inf'), "Mesaj": "Hata: Düğüm grafikte mevcut değil.", "SureSaniye": 0.0}
-        
-        
-        mesafeKaydi = {k_id: float('inf') for k_id in self.graf.nodes}
-        mesafeKaydi[baslangicID] = 0
-        hangiOnceki = {k_id: None for k_id in self.graf.nodes}
-        siraliIslem = [(0, baslangicID)] 
-
-        while siraliIslem:
-            
-            mevcutMesafe, mevcutID = heapq.heappop(siraliIslem)
-            
-            if mevcutMesafe > mesafeKaydi[mevcutID]: continue
-            if mevcutID == hedefID: break
-
-            for kenar in self.graf.nodes[mevcutID].bagliKenarlar:
-                komsusu = kenar.karsidakiDugumuVer(self.graf.nodes[mevcutID])
-                komsuID = komsusu.kNo
-                maliyet = kenar.maliyet
-
-                yeniMesafe = mevcutMesafe + maliyet
-                
-                if yeniMesafe < mesafeKaydi[komsuID]:
-                    mesafeKaydi[komsuID] = yeniMesafe
-                    hangiOnceki[komsuID] = mevcutID
-                    heapq.heappush(siraliIslem, (yeniMesafe, komsuID))
-        
-        yolListesi = []
-        mevcut = hedefID
-        finalMesafe = mesafeKaydi[hedefID]
-        
-        if finalMesafe == float('inf'):
-            gecenSure = self.sureHesapla(baslangicSuresi)
-            return {"Sonuclar": [], "Mesafe": float('inf'), "Mesaj": "Başlangıçtan hedefe yol bulunamadı.", "SureSaniye": gecenSure}
-
-        while mevcut is not None:
-            yolListesi.append(mevcut)
-            mevcut = hangiOnceki[mevcut]
-
-        yolListesi.reverse()
-        gecenSure = self.sureHesapla(baslangicSuresi)
-
-        return {
-            "Sonuclar": yolListesi,
-            "Mesafe": finalMesafe,
-            "Mesaj": "En kısa yol bulundu.",
-            "SureSaniye": gecenSure
-        }
+        yol.reverse()
+        return {"en_kisa_yol": yol, "mesafe": mesafeler[hedef], "sure": self.sure_olc(t1)}
