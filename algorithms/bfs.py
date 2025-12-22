@@ -1,53 +1,36 @@
-
-
-from temelAlgoritma import TemelAlgoritma
+import time
 from collections import deque
-import time 
+from temelAlgoritma import temelAlgoritma
 
-class AramaBFS(TemelAlgoritma):
-    
-
-    
-    
-    def calistir(self, baslangicID):
+class aramaBFS(temelAlgoritma):
+    def calistir(self, baslangic_id):
+        t1 = time.time()
         
-        baslangicSuresi = time.time() 
-        
-        baslangicNode = self.graf.nodes.get(baslangicID)
-        
-        if baslangicNode is None:
-            return {
-                "Sonuclar": None,
-                "Mesaj": "Hata: Başlangıç düğümü grafikte yok.",
-                "SureSaniye": 0.0
-            } 
+        adj = {n['id']: [] for n in self.graf['nodes']}
+        for e in self.graf['edges']:
+            adj[e['source']].append(e['target'])
+            adj[e['target']].append(e['source'])
 
-        ziyaretKaydi = set() 
-        islemSirasi = deque([baslangicNode]) 
-        bulunanDugumler = [] 
+        if baslangic_id not in adj:
+            return {"mesaj": "ID bulunamadı", "sure": 0}
 
-        
-        while len(islemSirasi) > 0: 
-            
-            mevcutNode = islemSirasi.popleft()
-            
-            if mevcutNode.kNo not in ziyaretKaydi:
-                
-                ziyaretKaydi.add(mevcutNode.kNo)
-                bulunanDugumler.append(mevcutNode.kNo)
+        ziyaret = {baslangic_id}
+        kuyruk = deque([baslangic_id])
+        siralamalar = []
 
-                for kenar in mevcutNode.bagliKenarlar:
-                    
-                    komsusu = kenar.karsidakiDugumuVer(mevcutNode)
+        while kuyruk:
+            curr_id = kuyruk.popleft()
+            node_bilgi = next((n for n in self.graf['nodes'] if n['id'] == curr_id), None)
+            if node_bilgi:
+                siralamalar.append(f"{node_bilgi['name']} ({curr_id})")
 
-                    if komsusu.kNo not in ziyaretKaydi:
-                        islemSirasi.append(komsusu)
-                        
-        gecenSure = self.sureHesapla(baslangicSuresi) 
-        
+            for komsu in adj[curr_id]:
+                if komsu not in ziyaret:
+                    ziyaret.add(komsu)
+                    kuyruk.append(komsu)
+
         return {
-            "Sonuclar": bulunanDugumler,
-            "Mesaj": "Genişlik Öncelikli Arama başarıyla tamamlandı.",
-            "SureSaniye": gecenSure
-        }# __init__ metodu TemelAlgoritma sınıfı tarafından yönetilir.# Süreyi TemelAlgoritma üzerinden hesapla"""Genişlik Öncelikli Arama (BFS). TemelAlgoritma'dan kalıtım alır."""
-    """Bir düğümden erişilebilen tüm kullanıcıları bulur (İşlevsel İster, 3.2)."""# BFS kuyruk mantığı
+            "sonuc": siralamalar,
+            "adet": len(siralamalar),
+            "sure": self.sure_olc(t1)
+        }
