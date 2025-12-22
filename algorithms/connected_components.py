@@ -1,44 +1,32 @@
-
-from temelAlgoritma import TemelAlgoritma 
-from collections import deque
 import time
+from collections import deque
+from temelAlgoritma import temelAlgoritma
 
-class BagliBilesenler(TemelAlgoritma):
-
+class BagliBilesenler(temelAlgoritma):
     def calistir(self):
-        baslangicSuresi = time.time() 
-        
-        ziyaretKaydi = set()
-        toplulukListesi = [] 
+        t1 = time.time()
+        adj = {n['id']: [] for n in self.graf['nodes']}
+        for e in self.graf['edges']:
+            adj[e['source']].append(e['target'])
+            adj[e['target']].append(e['source'])
 
-        for kID, dugum in self.graf.nodes.items():
-            
-            if kID not in ziyaretKaydi:
-                
-                mevcutTopluluk = []
-                islemSirasi = deque([dugum]) 
-                
-                ziyaretKaydi.add(kID)
-                mevcutTopluluk.append(kID)
+        ziyaret = set()
+        gruplar = []
 
-                while len(islemSirasi) > 0: 
-                    mevcut = islemSirasi.popleft()
-                    
-                    for kenar in mevcut.bagliKenarlar:
-                        komsusu = kenar.karsidakiDugumuVer(mevcut)
-                        komsuID = komsusu.kNo
+        for node in self.graf['nodes']:
+            nid = node['id']
+            if nid not in ziyaret:
+                grup = []
+                q = deque([nid])
+                ziyaret.add(nid)
+                while q:
+                    curr = q.popleft()
+                    info = next(x for x in self.graf['nodes'] if x['id'] == curr)
+                    grup.append(info['name'])
+                    for k in adj[curr]:
+                        if k not in ziyaret:
+                            ziyaret.add(k)
+                            q.append(k)
+                gruplar.append(grup)
 
-                        if komsuID not in ziyaretKaydi:
-                            ziyaretKaydi.add(komsuID)
-                            mevcutTopluluk.append(komsuID)
-                            islemSirasi.append(komsusu)
-                            
-                toplulukListesi.append(mevcutTopluluk)
-                
-        gecenSure = self.sureHesapla(baslangicSuresi) 
-        
-        return {
-            "Sonuclar": toplulukListesi,
-            "Mesaj": f"Toplam {len(toplulukListesi)} farklı topluluk (bileşen) bulundu.",
-            "SureSaniye": gecenSure
-        }
+        return {"gruplar": gruplar, "adet": len(gruplar), "sure": self.sure_olc(t1)}
