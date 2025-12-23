@@ -1,9 +1,13 @@
+from src.utils import get_dynamic_weight
+
+
 class AStarAlgorithm:
     @staticmethod
     def run(graph, start_id, goal_id):
         open_set = {start_id}
         came_from = {}
 
+        # Gerçek maliyet tablosu
         g_score = {node: float("inf") for node in graph.nodes}
         g_score[start_id] = 0
 
@@ -22,7 +26,8 @@ class AStarAlgorithm:
             open_set.remove(current)
 
             for neighbor in graph.nodes[current].neighbors:
-                tentative = g_score[current] + 1
+                weight = get_dynamic_weight(graph.nodes[current], graph.nodes[neighbor])
+                tentative = g_score[current] + weight
                 if tentative < g_score[neighbor]:
                     came_from[neighbor] = current
                     g_score[neighbor] = tentative
