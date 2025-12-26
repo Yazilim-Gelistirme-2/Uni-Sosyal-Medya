@@ -1,21 +1,29 @@
 import math
 
-
 def get_dynamic_weight(node_i, node_j):
     """
-    İki düğüm arasındaki ağırlığı belgedeki formüle göre hesaplar:
-    1 + sqrt((Aktiflik_i - Aktiflik_j)^2 + (Etkilesim_i - Etkilesim_j)^2 + (Baglanti_i - Baglanti_j)^2)
+    Döküman 4.3'teki Dinamik Ağırlık formülünü hesaplar.
+    Ahmet(1)-Mehmet(3) arası: 0.0328
+    Ahmet(1)-Elif(2) arası: 0.0212
     """
-    # Özellikler yüklenmemişse varsayılan 1.0 döndür
-    if not hasattr(node_i, 'properties') or not hasattr(node_j, 'properties'):
+    p_i = node_i.properties if hasattr(node_i, 'properties') else {}
+    p_j = node_j.properties if hasattr(node_j, 'properties') else {}
+    
+    try:
+        # Formül: (P1i - P1j)^2 + (P2i - P2j)^2 + (P3i - P3j)^2 
+        diff_sq_sum = (
+            (float(p_i.get('aktiflik', 0)) - float(p_j.get('aktiflik', 0)))**2 +
+            (float(p_i.get('etkilesim', 0)) - float(p_j.get('etkilesim', 0)))**2 +
+            (float(p_i.get('baglanti_sayisi', 0)) - float(p_j.get('baglanti_sayisi', 0)))**2
+        )
+        
+        # Payda hesabı (Uzaklık arttıkça büyür) [cite: 59, 62]
+        denominator = 1 + math.sqrt(diff_sq_sum)
+        
+        # Final Ağırlık/Maliyet: 1 / Payda 
+        # Bu değer benzerlik arttıkça yükselir [cite: 61]
+        weight = 1 / denominator
+        
+        return round(weight, 4)
+    except (ValueError, TypeError, ZeroDivisionError):
         return 1.0
-
-    p1 = node_i.properties
-    p2 = node_j.properties
-
-    # Formül: Madde 4.3
-    diff_aktiflik = (p1.get("aktiflik", 0) - p2.get("aktiflik", 0)) ** 2
-    diff_etkilesim = (p1.get("etkilesim", 0) - p2.get("etkilesim", 0)) ** 2
-    diff_baglanti = (p1.get("baglanti_sayisi", 0) - p2.get("baglanti_sayisi", 0)) ** 2
-
-    return 1 + math.sqrt(diff_aktiflik + diff_etkilesim + diff_baglanti)
