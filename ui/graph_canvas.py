@@ -1,6 +1,6 @@
 import tkinter as tk
 import math
-from src.utils import get_dynamic_weight  # Döküman formülünü kullanmak için ekledik [cite: 59]
+from src.utils import get_dynamic_weight  
 
 class GraphCanvas(tk.Canvas):
     def __init__(self, master):
@@ -14,7 +14,6 @@ class GraphCanvas(tk.Canvas):
         self.delete("all")
         if not graph or not graph.nodes: return
 
-        # 1. Pozisyon Hesaplama (Dairesel Yerleşim) [cite: 66]
         nodes = list(graph.nodes.keys())
         w = self.winfo_width() if self.winfo_width() > 1 else 600
         h = self.winfo_height() if self.winfo_height() > 1 else 600
@@ -25,7 +24,6 @@ class GraphCanvas(tk.Canvas):
             angle = 2 * math.pi * i / len(nodes)
             self.positions[nid] = (cx + r * math.cos(angle), cy + r * math.sin(angle))
 
-        # 2. Kenarları (Yolları) Çiz [cite: 25]
         path_edges = set()
         if highlight_path and len(highlight_path) > 1:
             for i in range(len(highlight_path) - 1):
@@ -41,10 +39,8 @@ class GraphCanvas(tk.Canvas):
                     l_color = "#1f6feb" if is_path else "#d1d5da"
                     l_width = 4 if is_path else 2 
                     tag = f"edge_{nid}_{neighbor}"
-                    # Kenarların yönsüz ve görsel olması sağlandı [cite: 28]
                     self.create_line(x1, y1, x2, y2, fill=l_color, width=l_width, tags=(tag, "edge"))
 
-        # 3. Düğümleri Çiz [cite: 25]
         for nid, (x, y) in self.positions.items():
             if colors and nid in colors:
                 base_color = self.color_palette[colors[nid] % len(self.color_palette)]
@@ -62,7 +58,6 @@ class GraphCanvas(tk.Canvas):
         item = self.find_closest(event.x, event.y)
         tags = self.gettags(item)
         
-        # Düğüm üzerine gelme kontrolü [cite: 29]
         for tag in tags:
             if tag.startswith("node_"):
                 nid = int(tag.split("_")[1])
@@ -89,7 +84,6 @@ class GraphCanvas(tk.Canvas):
         node = self.graph.nodes[nid]
         props = node.properties
         
-        # Dökümanda istenen sayısal özellikler ve gerçek komşu sayısı [cite: 31, 54]
         gercek_baglanti = len(node.neighbors)
         
         text = (f"ID: {nid}\nİsim: {node.name}\n"
@@ -107,8 +101,7 @@ class GraphCanvas(tk.Canvas):
         node_u = self.graph.nodes[u]
         node_v = self.graph.nodes[v]
         
-        # Döküman 4.3 formülüne göre hesaplanan ağırlık/maliyet [cite: 59]
-        # Ahmet(1)-Mehmet(3) arası burada artık 0.0328 görünecek
+        
         maliyet = get_dynamic_weight(node_u, node_v)
         
         text = f"Yol: {u} ↔ {v}\nMaliyet: {maliyet}"
