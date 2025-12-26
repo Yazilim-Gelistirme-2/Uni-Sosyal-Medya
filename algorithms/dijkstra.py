@@ -1,42 +1,51 @@
 import heapq
 import time
-from temelAlgoritma import temelAlgoritma
+from algorithms.baseAlgorithm import temelAlgoritma
+from src.utils import get_dynamic_weight
 
-class djikstra(temelAlgoritma):
-    def calistir(self, baslangic, hedef):
+
+class dijkstra(temelAlgoritma):
+    def calistir(self, baslangic_id, hedef_id):
         t1 = time.time()
-        
-        ids = [n['id'] for n in self.graf['nodes']]
-        adj = {n: [] for n in ids}
-        for e in self.graf['edges']:
-            adj[e['source']].append(e['target'])
-            adj[e['target']].append(e['source'])
+        if baslangic_id not in self.graph.nodes or hedef_id not in self.graph.nodes:
+            return {"mesaj": "ID bulunamadı", "sure": 0}
 
-        mesafeler = {n: float('inf') for n in ids}
-        mesafeler[baslangic] = 0
-        nereden = {n: None for n in ids}
-        pq = [(0, baslangic)]
+        mesafeler = {node_id: float('inf') for node_id in self.graph.nodes}
+        mesafeler[baslangic_id] = 0
+        onceki = {node_id: None for node_id in self.graph.nodes}
+        pq = [(0, baslangic_id)]
 
         while pq:
-            d, u = heapq.heappop(pq)
-            if d > mesafeler[u]: continue
-            if u == hedef: break
+            mevcut_mesafe, u = heapq.heappop(pq)
+            if mevcut_mesafe > mesafeler[u]: continue
+            if u == hedef_id: break
 
-            for v in adj[u]:
-                if mesafeler[u] + 1 < mesafeler[v]:
-                    mesafeler[v] = mesafeler[u] + 1
-                    nereden[v] = u
-                    heapq.heappush(pq, (mesafeler[v], v))
+            for v in self.graph.nodes[u].neighbors:
+                # DİNAMİK AĞIRLIK KULLANIMI
+                agirlik = get_dynamic_weight(self.graph.nodes[u], self.graph.nodes[v])
+                yeni_mesafe = mesafeler[u] + agirlik
 
-        yol = []
-        curr = hedef
-        if mesafeler[hedef] == float('inf'):
+                if yeni_mesafe < mesafeler[v]:
+                    mesafeler[v] = yeni_mesafe
+                    onceki[v] = u
+                    heapq.heappush(pq, (yeni_mesafe, v))
+
+        # Yol yoksa
+        if mesafeler[hedef_id] == float('inf'):
             return {"mesaj": "Yol bulunamadı", "sure": self.sure_olc(t1)}
 
+        # En kısa yolun geri çıkarılması
+        yol = []
+        curr = hedef_id
         while curr is not None:
-            n = next(x for x in self.graf['nodes'] if x['id'] == curr)
-            yol.append(n['name'])
-            curr = nereden[curr]
-        
+            node = self.graph.nodes[curr]
+            yol.append(f"{node.name} ({curr})")
+            curr = onceki[curr]
+
         yol.reverse()
-        return {"en_kisa_yol": yol, "mesafe": mesafeler[hedef], "sure": self.sure_olc(t1)}
+
+        return {
+            "en_kisa_yol": yol,
+            "mesafe": mesafeler[hedef_id],
+            "sure": self.sure_olc(t1)
+        }

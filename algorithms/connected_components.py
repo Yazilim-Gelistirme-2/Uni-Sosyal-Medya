@@ -1,32 +1,37 @@
 import time
 from collections import deque
-from temelAlgoritma import temelAlgoritma
+from algorithms.baseAlgorithm import temelAlgoritma
+
 
 class BagliBilesenler(temelAlgoritma):
     def calistir(self):
         t1 = time.time()
-        adj = {n['id']: [] for n in self.graf['nodes']}
-        for e in self.graf['edges']:
-            adj[e['source']].append(e['target'])
-            adj[e['target']].append(e['source'])
 
         ziyaret = set()
         gruplar = []
 
-        for node in self.graf['nodes']:
-            nid = node['id']
-            if nid not in ziyaret:
+        # Graph üzerindeki tüm düğümler
+        for node_id in self.graph.nodes:
+            if node_id not in ziyaret:
                 grup = []
-                q = deque([nid])
-                ziyaret.add(nid)
-                while q:
-                    curr = q.popleft()
-                    info = next(x for x in self.graf['nodes'] if x['id'] == curr)
-                    grup.append(info['name'])
-                    for k in adj[curr]:
-                        if k not in ziyaret:
-                            ziyaret.add(k)
-                            q.append(k)
+                kuyruk = deque([node_id])
+                ziyaret.add(node_id)
+
+                while kuyruk:
+                    curr_id = kuyruk.popleft()
+                    curr_node = self.graph.nodes[curr_id]
+
+                    grup.append(f"{curr_node.name} ({curr_id})")
+
+                    for komsu_id in curr_node.neighbors:
+                        if komsu_id not in ziyaret:
+                            ziyaret.add(komsu_id)
+                            kuyruk.append(komsu_id)
+
                 gruplar.append(grup)
 
-        return {"gruplar": gruplar, "adet": len(gruplar), "sure": self.sure_olc(t1)}
+        return {
+            "gruplar": gruplar,
+            "adet": len(gruplar),
+            "sure": self.sure_olc(t1)
+        }

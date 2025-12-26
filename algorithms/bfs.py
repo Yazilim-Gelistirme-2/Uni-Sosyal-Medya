@@ -1,33 +1,31 @@
 import time
 from collections import deque
-from temelAlgoritma import temelAlgoritma
+from algorithms.baseAlgorithm import temelAlgoritma
+
 
 class aramaBFS(temelAlgoritma):
     def calistir(self, baslangic_id):
         t1 = time.time()
-        
-        adj = {n['id']: [] for n in self.graf['nodes']}
-        for e in self.graf['edges']:
-            adj[e['source']].append(e['target'])
-            adj[e['target']].append(e['source'])
 
-        if baslangic_id not in adj:
+        if baslangic_id not in self.graph.nodes:
             return {"mesaj": "ID bulunamadı", "sure": 0}
 
-        ziyaret = {baslangic_id}
+        ziyaret = set()
         kuyruk = deque([baslangic_id])
         siralamalar = []
 
+        ziyaret.add(baslangic_id)
+
         while kuyruk:
             curr_id = kuyruk.popleft()
-            node_bilgi = next((n for n in self.graf['nodes'] if n['id'] == curr_id), None)
-            if node_bilgi:
-                siralamalar.append(f"{node_bilgi['name']} ({curr_id})")
+            curr_node = self.graph.nodes[curr_id]
 
-            for komsu in adj[curr_id]:
-                if komsu not in ziyaret:
-                    ziyaret.add(komsu)
-                    kuyruk.append(komsu)
+            siralamalar.append(f"{curr_node.name} ({curr_id})")
+
+            for komsu_id in curr_node.neighbors:
+                if komsu_id not in ziyaret:
+                    ziyaret.add(komsu_id)
+                    kuyruk.append(komsu_id)
 
         return {
             "sonuc": siralamalar,
