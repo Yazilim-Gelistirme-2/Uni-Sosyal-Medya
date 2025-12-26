@@ -31,7 +31,6 @@ class ControlPanel(ctk.CTkFrame):
         self.add_menu_item("Öğrenci Kaydı Sil", self.delete_node_ui, "❌")
         self.add_menu_item("Bağlantı Kur", self.add_edge_ui, "🤝")
         self.add_menu_item("Değişiklikleri Kaydet", self.save_to_json, "💾")
-        # Hocanın istediği yeni özellik buraya eklendi, diğerleri kaydırıldı
         self.add_menu_item("Matrisi CSV Yap", self.export_matrix_csv, "📊")
 
         self.add_header("AĞ ANALİZİ")
@@ -55,7 +54,6 @@ class ControlPanel(ctk.CTkFrame):
                             text_color="#C9D1D9", font=("Inter", 12), height=40, corner_radius=8)
         btn.pack(fill="x", padx=10, pady=2)
 
-    # --- HOCANIN İSTEDİĞİ MATRİS DIŞA AKTARIMI ---
     def export_matrix_csv(self):
         """Grafın komşuluk matrisini CSV olarak kaydeder."""
         if not self.master.graph: 
@@ -72,9 +70,7 @@ class ControlPanel(ctk.CTkFrame):
             try:
                 nodes, matrix = self.master.graph.get_adjacency_matrix()
                 with open(file_path, 'w', encoding='utf-8') as f:
-                    # Başlık satırı
                     f.write("," + ",".join(map(str, nodes)) + "\n")
-                    # Veri satırları
                     for i, row in enumerate(matrix):
                         f.write(f"{nodes[i]}," + ",".join(map(str, row)) + "\n")
                 messagebox.showinfo("Başarılı", "Matris CSV olarak dışa aktarıldı!")
