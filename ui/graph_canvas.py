@@ -22,9 +22,6 @@ class GraphCanvas(tk.Canvas):
         self.bind("<B1-Motion>", self.do_pan)
         self.bind("<MouseWheel>", self.zoom)
 
-    # ======================================================
-    # FORCE DIRECTED LAYOUT (ÜST ÜSTE BİNME YOK)
-    # ======================================================
     def compute_force_layout(self, graph, iterations=60):
         nodes = list(graph.nodes.keys())
         n = len(nodes)
@@ -64,7 +61,6 @@ class GraphCanvas(tk.Canvas):
                     disp[nodes[j]][0] -= (dx / dist) * force
                     disp[nodes[j]][1] -= (dy / dist) * force
 
-            # Attraction
             for node_id, node in graph.nodes.items():
                 for neighbor in node.neighbors:
                     dx = pos[node_id][0] - pos[neighbor][0]
@@ -75,7 +71,6 @@ class GraphCanvas(tk.Canvas):
                     disp[node_id][0] -= (dx / dist) * force
                     disp[node_id][1] -= (dy / dist) * force
 
-            # Güncelle
             for node in nodes:
                 x = pos[node][0] + disp[node][0] * 0.01
                 y = pos[node][1] + disp[node][1] * 0.01
@@ -86,9 +81,6 @@ class GraphCanvas(tk.Canvas):
 
         return pos
 
-    # ======================================================
-    # GRAPH ÇİZİMİ
-    # ======================================================
     def draw_graph(self, graph, colors=None, highlight_path=None):
         self.graph = graph
         self.delete("all")
@@ -98,7 +90,6 @@ class GraphCanvas(tk.Canvas):
 
         self.positions = self.compute_force_layout(graph)
 
-        # ------------------ EDGES ------------------
         for node_id, node in graph.nodes.items():
             for neighbor in node.neighbors:
                 if node_id < neighbor:
@@ -134,7 +125,6 @@ class GraphCanvas(tk.Canvas):
                     )
                     self.tag_bind(line, "<Leave>", self.hide_tooltip)
 
-        # ------------------ NODES ------------------
         palette = {
             1: "#e74c3c",
             2: "#2ecc71",
@@ -175,9 +165,6 @@ class GraphCanvas(tk.Canvas):
 
         self.configure(scrollregion=self.bbox("all"))
 
-    # ======================================================
-    # TOOLTIP
-    # ======================================================
     def show_node_info(self, event, node_id):
         node = self.graph.nodes[node_id]
         text = f"Düğüm: {node.id}\nİsim: {node.name}\nDerece: {len(node.neighbors)}"
@@ -216,9 +203,6 @@ class GraphCanvas(tk.Canvas):
             self.tooltip.destroy()
             self.tooltip = None
 
-    # ======================================================
-    # PAN & ZOOM
-    # ======================================================
     def start_pan(self, event):
         self.scan_mark(event.x, event.y)
 
