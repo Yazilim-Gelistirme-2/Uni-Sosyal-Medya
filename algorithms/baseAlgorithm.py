@@ -1,11 +1,8 @@
 import time
 
 class temelAlgoritma:
-    def __init__(self, veri):
-        self.graf = veri
+    def __init__(self, graph):
+        self.graph = graph
 
-    def calistir(self, *args, **kwargs):
-        raise NotImplementedError("Bu metod alt sınıflarda tanımlanmalı.")
-
-    def sure_olc(self, start):
-        return round(time.time() - start, 5)
+    def sure_olc(self, t1):
+        return round(time.time() - t1, 6)

@@ -4,4 +4,3 @@ class Node:
         self.name = name
         self.properties = properties or {}
         self.neighbors = []
-

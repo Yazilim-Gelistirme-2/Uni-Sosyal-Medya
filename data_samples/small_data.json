@@ -1,42 +1,218 @@
 {
-"graph_info": {
-"name": "KOU Small Social Network",
-"node_count": 15,
-"type": "undirected"
-},
-"nodes": [
-{"id": 1, "name": "Ahmet", "department": "Bilişim"},
-{"id": 2, "name": "Elif", "department": "Bilişim"},
-{"id": 3, "name": "Mehmet", "department": "Elektrik"},
-{"id": 4, "name": "Zeynep", "department": "Makine"},
-{"id": 5, "name": "Ali", "department": "Bilişim"},
-{"id": 6, "name": "Ayşe", "department": "İnşaat"},
-{"id": 7, "name": "Burak", "department": "Elektrik"},
-{"id": 8, "name": "Ceren", "department": "Makine"},
-{"id": 9, "name": "Deniz", "department": "Bilişim"},
-{"id": 10, "name": "Emre", "department": "Bilişim"},
-{"id": 11, "name": "Fatma", "department": "Elektrik"},
-{"id": 12, "name": "Gökhan", "department": "Makine"},
-{"id": 13, "name": "Hakan", "department": "İnşaat"},
-{"id": 14, "name": "İrem", "department": "Bilişim"},
-{"id": 15, "name": "Kemal", "department": "Elektrik"}
-],
-"edges": [
-{"source": 1, "target": 2},
-{"source": 1, "target": 3},
-{"source": 2, "target": 4},
-{"source": 2, "target": 5},
-{"source": 3, "target": 6},
-{"source": 3, "target": 7},
-{"source": 4, "target": 8},
-{"source": 5, "target": 9},
-{"source": 6, "target": 10},
-{"source": 7, "target": 11},
-{"source": 8, "target": 12},
-{"source": 9, "target": 13},
-{"source": 10, "target": 14},
-{"source": 11, "target": 15},
-{"source": 5, "target": 10},
-{"source": 9, "target": 14}
-]
+    "nodes": [
+        {
+            "id": 1,
+            "name": "Ahmet",
+            "properties": {
+                "aktiflik": 28,
+                "etkilesim": 7,
+                "baglanti_sayisi": 20
+            }
+        },
+        {
+            "id": 2,
+            "name": "Elif",
+            "properties": {
+                "aktiflik": 51,
+                "etkilesim": 47,
+                "baglanti_sayisi": 18
+            }
+        },
+        {
+            "id": 3,
+            "name": "Mehmet",
+            "properties": {
+                "aktiflik": 34,
+                "etkilesim": 31,
+                "baglanti_sayisi": 4
+            }
+        },
+        {
+            "id": 4,
+            "name": "Zeynep",
+            "properties": {
+                "aktiflik": 37,
+                "etkilesim": 6,
+                "baglanti_sayisi": 19
+            }
+        },
+        {
+            "id": 5,
+            "name": "Ali",
+            "properties": {
+                "aktiflik": 86,
+                "etkilesim": 29,
+                "baglanti_sayisi": 3
+            }
+        },
+        {
+            "id": 6,
+            "name": "Ayşe",
+            "properties": {
+                "aktiflik": 82,
+                "etkilesim": 18,
+                "baglanti_sayisi": 1
+            }
+        },
+        {
+            "id": 7,
+            "name": "Burak",
+            "properties": {
+                "aktiflik": 71,
+                "etkilesim": 44,
+                "baglanti_sayisi": 8
+            }
+        },
+        {
+            "id": 8,
+            "name": "Ceren",
+            "properties": {
+                "aktiflik": 67,
+                "etkilesim": 14,
+                "baglanti_sayisi": 20
+            }
+        },
+        {
+            "id": 9,
+            "name": "Deniz",
+            "properties": {
+                "aktiflik": 31,
+                "etkilesim": 31,
+                "baglanti_sayisi": 11
+            }
+        },
+        {
+            "id": 10,
+            "name": "Emre",
+            "properties": {
+                "aktiflik": 61,
+                "etkilesim": 38,
+                "baglanti_sayisi": 14
+            }
+        },
+        {
+            "id": 11,
+            "name": "Fatma",
+            "properties": {
+                "aktiflik": 89,
+                "etkilesim": 26,
+                "baglanti_sayisi": 9
+            }
+        },
+        {
+            "id": 12,
+            "name": "Gökhan",
+            "properties": {
+                "aktiflik": 57,
+                "etkilesim": 23,
+                "baglanti_sayisi": 1
+            }
+        },
+        {
+            "id": 13,
+            "name": "Hakan",
+            "properties": {
+                "aktiflik": 29,
+                "etkilesim": 36,
+                "baglanti_sayisi": 20
+            }
+        },
+        {
+            "id": 14,
+            "name": "İrem",
+            "properties": {
+                "aktiflik": 55,
+                "etkilesim": 22,
+                "baglanti_sayisi": 3
+            }
+        },
+        {
+            "id": 15,
+            "name": "Kemal",
+            "properties": {
+                "aktiflik": 37,
+                "etkilesim": 9,
+                "baglanti_sayisi": 19
+            }
+        },
+        {
+            "id": 16,
+            "name": "ali",
+            "properties": {
+                "aktiflik": 50,
+                "etkilesim": 20,
+                "baglanti_sayisi": 0
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source": 1,
+            "target": 2
+        },
+        {
+            "source": 1,
+            "target": 3
+        },
+        {
+            "source": 2,
+            "target": 4
+        },
+        {
+            "source": 2,
+            "target": 5
+        },
+        {
+            "source": 3,
+            "target": 6
+        },
+        {
+            "source": 3,
+            "target": 7
+        },
+        {
+            "source": 4,
+            "target": 8
+        },
+        {
+            "source": 5,
+            "target": 9
+        },
+        {
+            "source": 5,
+            "target": 10
+        },
+        {
+            "source": 6,
+            "target": 10
+        },
+        {
+            "source": 7,
+            "target": 11
+        },
+        {
+            "source": 8,
+            "target": 12
+        },
+        {
+            "source": 9,
+            "target": 13
+        },
+        {
+            "source": 9,
+            "target": 14
+        },
+        {
+            "source": 10,
+            "target": 14
+        },
+        {
+            "source": 11,
+            "target": 15
+        },
+        {
+            "source": 15,
+            "target": 16
+        }
+    ]
 }
