@@ -1,6 +1,4 @@
 
-# Uni-Sosyal-Medya
-=======
 # Üniversite Sosyal Ağ Analizi Uygulaması
 
 ## 1. Proje Adı, Ekip Üyeleri, Tarih
@@ -170,13 +168,13 @@ classDiagram
 
 ![BFS Tarama Sonucu](ScreenShots/resim2.png)
 
-![Welsh Powell](screenshots/resim3.png)
+![Welsh Powell](ScreenShots/resim3.png)
 
-![Dijkstra](screenshots/resim4.png)
+![Dijkstra](ScreenShots/resim4.png)
 
-![En güçlü bağlantılar](screenshots/resim5.png)
+![En güçlü bağlantılar](ScreenShots/resim5.png)
 
-![Bağlı Bileşenler](screenshots/resim6.png)
+![Bağlı Bileşenler](ScreenShots/resim6.png)
 ---
 
 ## 6. Sonuç ve Tartışma
