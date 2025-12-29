@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Uni-Sosyal-Medya
 =======
 # Üniversite Sosyal Ağ Analizi Uygulaması
@@ -191,4 +191,4 @@ classDiagram
 ### Olası Geliştirmeler
 - Daha gelişmiş merkezilik ölçütleri
 - Büyük ölçekli graf optimizasyonları
->>>>>>> 483b7eb (Projenin Kodları ve Görselleştirme hazırlandı.)
+
