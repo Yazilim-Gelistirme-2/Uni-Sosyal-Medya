@@ -60,7 +60,6 @@ class ControlPanel(ctk.CTkFrame):
 
         return wrapper
 
-    # --- Algoritma Fonksiyonları ---
 
     @measure_time
     def run_degree(self):
@@ -126,17 +125,13 @@ class ControlPanel(ctk.CTkFrame):
         else:
             self.master.node_info_panel.show_message("Yol bulunamadı!")
 
-    # control_panel.py içindeki load_json fonksiyonunu güncelle:
     def load_json(self):
         path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
         if not path: return
 
-        # 1. Grafı Yükle
         self.master.graph = Graph()
         self.master.graph.load_from_json(path)
 
-        # 2. Otomatik CSV Eşleşmesi (Dosya adından CSV bulma)
-        # Örnek: data_samples/medium_data.json -> data_samples/medium_nodes.csv
         csv_path = path.replace("_data.json", "_nodes.csv")
 
         try:
