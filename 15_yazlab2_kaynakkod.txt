@@ -1,0 +1,1120 @@
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\a_star.py
+=============================
+import time
+from src.utils import get_dynamic_weight
+
+
+class AStarAlgorithm:
+    @staticmethod
+    def run(graph, start_id, goal_id):
+        t1 = time.time()
+
+        open_set = {start_id}
+        came_from = {}
+
+        g_score = {node: float("inf") for node in graph.nodes}
+        g_score[start_id] = 0
+
+        f_score = {node: float("inf") for node in graph.nodes}
+
+        f_score[start_id] = get_dynamic_weight(graph.nodes[start_id], graph.nodes[goal_id])
+
+        while open_set:
+            current = min(open_set, key=lambda n: f_score[n])
+
+            if current == goal_id:
+                path = []
+                temp_current = current
+                while temp_current in came_from:
+                    path.append(temp_current)
+                    temp_current = came_from[temp_current]
+                path.append(start_id)
+                path.reverse()
+
+                return path, round(g_score[goal_id], 4)
+
+            open_set.remove(current)
+
+            for neighbor in graph.nodes[current].neighbors:
+                weight = get_dynamic_weight(graph.nodes[current], graph.nodes[neighbor])
+
+                tentative_g_score = g_score[current] + weight
+
+                if tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+
+                    h_score = get_dynamic_weight(graph.nodes[neighbor], graph.nodes[goal_id])
+                    f_score[neighbor] = g_score[neighbor] + h_score
+
+                    if neighbor not in open_set:
+                        open_set.add(neighbor)
+
+        return [], float("inf")
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\baseAlgorithm.py
+=============================
+import time
+
+class temelAlgoritma:
+    def __init__(self, graph):
+        self.graph = graph
+
+    def sure_olc(self, t1):
+        return round(time.time() - t1, 6)
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\bfs.py
+=============================
+import time
+from collections import deque
+from algorithms.baseAlgorithm import temelAlgoritma
+
+
+class aramaBFS(temelAlgoritma):
+    def calistir(self, baslangic_id):
+        t1 = time.time()
+
+        if baslangic_id not in self.graph.nodes:
+            return {"mesaj": "ID bulunamadÄ±", "sure": 0}
+
+        ziyaret = set()
+        kuyruk = deque([baslangic_id])
+        siralamalar = []
+
+        ziyaret.add(baslangic_id)
+
+        while kuyruk:
+            curr_id = kuyruk.popleft()
+            curr_node = self.graph.nodes[curr_id]
+
+            siralamalar.append(f"{curr_node.name} ({curr_id})")
+
+            for komsu_id in curr_node.neighbors:
+                if komsu_id not in ziyaret:
+                    ziyaret.add(komsu_id)
+                    kuyruk.append(komsu_id)
+
+        return {
+            "sonuc": siralamalar,
+            "adet": len(siralamalar),
+            "sure": self.sure_olc(t1)
+        }
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\centrality.py
+=============================
+class Centrality:
+
+    @staticmethod
+    def degree_centrality(graph):
+        n = len(graph.nodes)
+        centrality = {}
+
+        for node_id, node in graph.nodes.items():
+            centrality[node_id] = len(node.neighbors) / (n - 1)
+
+        return centrality
+
+    @staticmethod
+    def top_k_degree_nodes(graph, k=5):
+
+        dc = Centrality.degree_centrality(graph)
+
+
+        sorted_nodes = sorted(
+            dc.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )
+
+        return sorted_nodes[:k]
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\connected_components.py
+=============================
+import time
+from collections import deque
+from algorithms.baseAlgorithm import temelAlgoritma
+
+
+class BagliBilesenler(temelAlgoritma):
+    def calistir(self):
+        t1 = time.time()
+
+        ziyaret = set()
+        gruplar = []
+
+        # Graph Ã¼zerindeki tÃ¼m dÃ¼ÄŸÃ¼mler
+        for node_id in self.graph.nodes:
+            if node_id not in ziyaret:
+                grup = []
+                kuyruk = deque([node_id])
+                ziyaret.add(node_id)
+
+                while kuyruk:
+                    curr_id = kuyruk.popleft()
+                    curr_node = self.graph.nodes[curr_id]
+
+                    grup.append(f"{curr_node.name} ({curr_id})")
+
+                    for komsu_id in curr_node.neighbors:
+                        if komsu_id not in ziyaret:
+                            ziyaret.add(komsu_id)
+                            kuyruk.append(komsu_id)
+
+                gruplar.append(grup)
+
+        return {
+            "gruplar": gruplar,
+            "adet": len(gruplar),
+            "sure": self.sure_olc(t1)
+        }
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\dfs.py
+=============================
+class DFS:
+    @staticmethod
+    def run(graph, start_id):
+        visited = set()
+        stack = [start_id]
+        order = []
+
+        while stack:
+            u = stack.pop()
+            if u not in visited:
+                visited.add(u)
+                order.append(u)
+                for v in reversed(graph.nodes[u].neighbors):
+                    if v not in visited:
+                        stack.append(v)
+
+        return order
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\dijkstra.py
+=============================
+import heapq
+import time
+from algorithms.baseAlgorithm import temelAlgoritma
+from src.utils import get_dynamic_weight
+
+
+class dijkstra(temelAlgoritma):
+    def calistir(self, baslangic_id, hedef_id):
+        t1 = time.time()
+
+        if baslangic_id not in self.graph.nodes or hedef_id not in self.graph.nodes:
+            return {"mesaj": "ID bulunamadÄ±", "sure": 0}
+
+        mesafeler = {node_id: float('inf') for node_id in self.graph.nodes}
+        mesafeler[baslangic_id] = 0
+        onceki = {node_id: None for node_id in self.graph.nodes}
+
+        pq = [(0, baslangic_id)]
+
+        while pq:
+            mevcut_mesafe, u = heapq.heappop(pq)
+
+            if mevcut_mesafe > mesafeler[u]:
+                continue
+
+            if u == hedef_id:
+                break
+
+            for v in self.graph.nodes[u].neighbors:
+
+                agirlik = get_dynamic_weight(self.graph.nodes[u], self.graph.nodes[v])
+
+                yeni_mesafe = mesafeler[u] + agirlik
+
+                if yeni_mesafe < mesafeler[v]:
+                    mesafeler[v] = yeni_mesafe
+                    onceki[v] = u
+                    heapq.heappush(pq, (yeni_mesafe, v))
+
+        if mesafeler[hedef_id] == float('inf'):
+            return {"mesaj": "Yol bulunamadÄ±", "sure": self.sure_olc(t1)}
+
+        yol = []
+        curr = hedef_id
+        while curr is not None:
+            node = self.graph.nodes[curr]
+            yol.append(f"{node.name} ({curr})")
+            curr = onceki[curr]
+
+        yol.reverse()
+
+        return {
+            "en_kisa_yol": yol,
+            "mesafe": round(mesafeler[hedef_id], 4),  # YuvarlanmÄ±ÅŸ maliyet
+            "sure": self.sure_olc(t1)
+        }
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\welsh_powell.py
+=============================
+class WelshPowell:
+
+    @staticmethod
+    def color_graph(graph):
+
+        nodes_sorted = sorted(
+            graph.nodes.values(),
+            key=lambda node: len(node.neighbors),
+            reverse=True
+        )
+
+        color_of = {}
+        current_color = 1
+
+        for node in nodes_sorted:
+            if node.id in color_of:
+                continue
+
+
+            color_of[node.id] = current_color
+
+            for other in nodes_sorted:
+                if other.id in color_of:
+                    continue
+
+
+                conflict = False
+                for colored_node_id, color in color_of.items():
+                    if color == current_color:
+                        if colored_node_id in other.neighbors:
+                            conflict = True
+                            break
+
+                if not conflict:
+                    color_of[other.id] = current_color
+
+            current_color += 1
+
+        return color_of
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\algorithms\__init__.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\data\loader.py
+=============================
+import csv
+
+def load_node_properties(graph, csv_path):
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            for row in csv.DictReader(f):
+                node_id = int(row["DugumId"])
+                if node_id in graph.nodes:
+                    # TÃ¼m anahtarlarÄ± kÃ¼Ã§Ã¼k harfe zorlayarak kaydediyoruz
+                    graph.nodes[node_id].properties = {
+                        "aktiflik": float(row.get("Aktiflik", row.get("aktiflik", 0))),
+                        "etkilesim": float(row.get("Etkilesim", row.get("etkilesim", 0))),
+                        "baglanti_sayisi": int(row.get("BaglantiSayisi", row.get("baglanti_sayisi", 0)))
+                    }
+    except Exception as e:
+        print(f"CSV YÃ¼kleme HatasÄ±: {e}")
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\data\saver.py
+=============================
+# JSON / CSV kaydetme
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\data\weight_calculator.py
+=============================
+# Dinamik aÄŸÄ±rlÄ±k formÃ¼lÃ¼
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\data\__init__.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\data_samples\edges.csv.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\src\edge.py
+=============================
+# Ä°liÅŸki (danÄ±ÅŸmanlÄ±k, ortak proje vb.)
+
+class Edge:
+
+    def __init__(self, dugumKaynak, dugumHedef, maliyetDegeri=1.0):
+
+        self.kaynak = dugumKaynak
+        self.hedef = dugumHedef
+
+        self.maliyet = maliyetDegeri
+
+    def karsidakiDugumuVer(self, mevcutDugum):
+
+        if mevcutDugum is self.kaynak:
+            return self.hedef
+        else:
+            return self.kaynak
+
+    def __repr__(self):
+
+        return f"Baglanti({self.kaynak.kNo}-{self.hedef.kNo}, Maliyet={self.maliyet:.4f})"
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\src\graph.py
+=============================
+import json
+import random
+import math
+from src.node import Node
+from src.utils import get_dynamic_weight
+
+
+class Graph:
+    def __init__(self):
+        self.nodes = {}
+
+    def add_node(self, node):
+        self.nodes[node.id] = node
+
+    def add_edge(self, source_id, target_id):
+        if source_id in self.nodes and target_id in self.nodes:
+            if target_id not in self.nodes[source_id].neighbors:
+                self.nodes[source_id].neighbors.append(target_id)
+            if source_id not in self.nodes[target_id].neighbors:
+                self.nodes[target_id].neighbors.append(source_id)
+
+    def get_edge_weight(self, source_id, target_id):
+        if source_id not in self.nodes or target_id not in self.nodes:
+            return float('inf')
+
+        return get_dynamic_weight(self.nodes[source_id], self.nodes[target_id])
+
+    def load_from_json(self, json_file_path):
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # DÃ¼ÄŸÃ¼mleri oluÅŸtur
+        for node_data in data['nodes']:
+            props = node_data.get('properties', {})
+            if not props:
+                props = {
+                    "aktiflik": round(random.uniform(0.1, 1.0), 2),
+                    "etkilesim": random.randint(1, 50),
+                    "baglanti_sayisi": random.randint(1, 15)
+                }
+
+            node = Node(
+                id=node_data['id'],
+                name=node_data['name'],
+                properties=props
+            )
+            self.add_node(node)
+        for edge in data['edges']:
+            self.add_edge(edge['source'], edge['target'])
+
+    def get_adjacency_matrix(self):
+        nodes = sorted(list(self.nodes.keys()))
+        size = len(nodes)
+        matrix = [[0] * size for _ in range(size)]
+        id_to_idx = {nid: i for i, nid in enumerate(nodes)}
+
+        for nid, node in self.nodes.items():
+            for neighbor in node.neighbors:
+                if neighbor in id_to_idx:
+                    matrix[id_to_idx[nid]][id_to_idx[neighbor]] = 1
+
+        return nodes, matrix
+
+    def get_node_count(self):
+        return len(self.nodes)
+
+    def get_all_nodes(self):
+        return list(self.nodes.values())
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\src\node.py
+=============================
+class Node:
+    def __init__(self, id, name, properties=None):
+        self.id = id
+        self.name = name
+        self.properties = properties or {}
+        self.neighbors = []
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\src\utils.py
+=============================
+import math
+
+
+def get_dynamic_weight(node_i, node_j):
+    p_i = node_i.properties if hasattr(node_i, 'properties') else {}
+    p_j = node_j.properties if hasattr(node_j, 'properties') else {}
+
+    try:
+        diff_sq_sum = (
+                (float(p_i.get('aktiflik', 0)) - float(p_j.get('aktiflik', 0))) ** 2 +
+                (float(p_i.get('etkilesim', 0)) - float(p_j.get('etkilesim', 0))) ** 2 +
+                (float(p_i.get('baglanti_sayisi', 0)) - float(p_j.get('baglanti_sayisi', 0))) ** 2
+        )
+        denominator = 1 + math.sqrt(diff_sq_sum)
+        weight = 1 / denominator
+
+        return round(weight, 4)
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 1.0
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\src\__init__.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\tests\test_medium_graph.py
+=============================
+import json
+import csv
+import random
+
+
+node_count = 60
+nodes_data = []
+csv_data = []
+edges = []
+
+departments = ["BiliÅŸim", "Elektrik", "Makine", "Ä°nÅŸaat", "EndÃ¼stri"]
+
+
+for i in range(1, node_count + 1):
+    nodes_data.append({
+        "id": i,
+        "name": f"User_{i}",
+        "department": random.choice(departments)
+    })
+
+    csv_data.append({
+        "DugumId": i,
+        "Aktiflik": round(random.uniform(0.1, 1.0), 2),
+        "Etkilesim": random.randint(1, 50),
+        "BaglantiSayisi": 0  # AÅŸaÄŸÄ±da hesaplanacak
+    })
+
+
+for i in range(1, node_count + 1):
+    targets = random.sample(range(1, node_count + 1), random.randint(1, 3))
+    for t in targets:
+        if i != t:
+            edge = tuple(sorted((i, t)))
+            if edge not in edges:
+                edges.append(edge)
+
+
+for s, t in edges:
+    csv_data[s - 1]["BaglantiSayisi"] += 1
+    csv_data[t - 1]["BaglantiSayisi"] += 1
+
+
+json_output = {
+    "graph_info": {"name": "KOU Medium Network", "node_count": node_count, "type": "undirected"},
+    "nodes": nodes_data,
+    "edges": [{"source": s, "target": t} for s, t in edges]
+}
+
+with open("data_samples/medium_data.json", "w", encoding="utf-8") as f:
+    json.dump(json_output, f, ensure_ascii=False, indent=4)
+
+
+with open("data_samples/medium_nodes.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=["DugumId", "Aktiflik", "Etkilesim", "BaglantiSayisi"])
+    writer.writeheader()
+    writer.writerows(csv_data)
+
+print("Orta Ã¶lÃ§ekli test dosyalarÄ± hazÄ±r!")
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\tests\test_small_graph.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\ui\control_panel.py
+=============================
+import customtkinter as ctk
+
+import json
+
+from tkinter import filedialog, simpledialog, messagebox
+
+from algorithms.centrality import Centrality
+from algorithms.welsh_powell import WelshPowell
+from algorithms.bfs import aramaBFS
+from algorithms.dijkstra import dijkstra
+from algorithms.connected_components import BagliBilesenler
+from algorithms.dfs import DFS
+from algorithms.a_star import AStarAlgorithm
+
+
+class ControlPanel(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master, corner_radius=0, fg_color="#0D1117", width=280)
+        self.current_file_path = None
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+
+        self.add_header("DATA MANAGEMENT")
+        self.add_menu_item("Veri Seti YÃ¼kle", self.load_json, "ğŸ“")
+        self.add_menu_item("Yeni Ã–ÄŸrenci Ekle", self.add_node_ui, "â•")
+        self.add_menu_item("Bilgileri GÃ¼ncelle", self.update_node_ui, "ğŸ“")
+        self.add_menu_item("Ã–ÄŸrenci KaydÄ± Sil", self.delete_node_ui, "âŒ")
+        self.add_menu_item("BaÄŸlantÄ± Kur", self.add_edge_ui, "ğŸ¤")
+        self.add_menu_item("DeÄŸiÅŸiklikleri Kaydet", self.save_to_json, "ğŸ’¾")
+        self.add_menu_item("Matrisi CSV Yap", self.export_matrix_csv, "ğŸ“Š")
+
+        self.add_header("AÄ ANALÄ°ZÄ°")
+        self.add_menu_item("Merkeziyet (Centrality)", self.run_degree, "ğŸ“Š")
+        self.add_menu_item("BaÄŸlÄ± BileÅŸenler", self.run_components, "ğŸ”—")
+        self.add_menu_item("Welshâ€“Powell Boyama", self.run_welsh_powell, "ğŸ¨")
+
+        self.add_header("YOL BULMA VE TARAMA")
+        self.add_menu_item("Dijkstra (En KÄ±sa Yol)", self.run_dijkstra, "ğŸ“")
+        self.add_menu_item("A* AlgoritmasÄ±", self.run_astar, "ğŸš€")
+        self.add_menu_item("BFS TaramasÄ±", self.run_bfs, "ğŸ”")
+        self.add_menu_item("DFS TaramasÄ±", self.run_dfs, "ğŸ”")
+
+    def add_header(self, title):
+        lbl = ctk.CTkLabel(self.scroll_frame, text=title, font=("Inter", 10, "bold"), text_color="#484F58", anchor="w")
+        lbl.pack(fill="x", padx=20, pady=(15, 5))
+
+    def add_menu_item(self, text, command, icon):
+        btn = ctk.CTkButton(self.scroll_frame, text=f"  {icon}  {text}", command=command,
+                            anchor="w", fg_color="transparent", hover_color="#1C2128",
+                            text_color="#C9D1D9", font=("Inter", 12), height=40, corner_radius=8)
+        btn.pack(fill="x", padx=10, pady=2)
+
+    def export_matrix_csv(self):
+        """GrafÄ±n komÅŸuluk matrisini CSV olarak kaydeder."""
+        if not self.master.graph:
+            messagebox.showwarning("UyarÄ±", "Ã–nce bir veri seti yÃ¼klemelisiniz!")
+            return
+
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV Files", "*.csv")],
+            title="KomÅŸuluk Matrisini Kaydet"
+        )
+
+        if file_path:
+            try:
+                nodes, matrix = self.master.graph.get_adjacency_matrix()
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write("," + ",".join(map(str, nodes)) + "\n")
+                    for i, row in enumerate(matrix):
+                        f.write(f"{nodes[i]}," + ",".join(map(str, row)) + "\n")
+                messagebox.showinfo("BaÅŸarÄ±lÄ±", "Matris CSV olarak dÄ±ÅŸa aktarÄ±ldÄ±!")
+            except Exception as e:
+                messagebox.showerror("Hata", f"Ä°ÅŸlem baÅŸarÄ±sÄ±z: {str(e)}")
+
+    def _safe_extract_ids(self, path_list):
+        p_ids = []
+        for x in path_list:
+            if isinstance(x, str) and "(" in x:
+                p_ids.append(int(x.split("(")[1][:-1]))
+            else:
+                p_ids.append(int(x))
+        return p_ids
+
+    def run_astar(self):
+        if not self.master.graph: return
+        s, g = simpledialog.askinteger("A*", "BaÅŸlangÄ±Ã§:"), simpledialog.askinteger("A*", "Hedef:")
+        if s is not None and g is not None:
+            path, cost = AStarAlgorithm.run(self.master.graph, s, g)
+            if path:
+                self.master.node_info_panel.show_path("A*", path, cost)
+                p_ids = self._safe_extract_ids(path)
+                self.master.graph_canvas.draw_graph(self.master.graph, highlight_path=p_ids)
+
+    def run_dijkstra(self):
+        if not self.master.graph: return
+        s, g = simpledialog.askinteger("Dijkstra", "BaÅŸlangÄ±Ã§:"), simpledialog.askinteger("Dijkstra", "Hedef:")
+        if s is not None and g is not None:
+            res = dijkstra(self.master.graph).calistir(s, g)
+            if "en_kisa_yol" in res:
+                self.master.node_info_panel.show_path("Dijkstra", res["en_kisa_yol"], res["mesafe"])
+                p_ids = self._safe_extract_ids(res["en_kisa_yol"])
+                self.master.graph_canvas.draw_graph(self.master.graph, highlight_path=p_ids)
+
+    def run_bfs(self):
+        if not self.master.graph: return
+        start = simpledialog.askinteger("BFS", "BaÅŸlangÄ±Ã§ ID:")
+        if start:
+            res = aramaBFS(self.master.graph).calistir(start)
+            self.master.node_info_panel.show_order("BFS", res["sonuc"], self.master.graph)
+            self.master.graph_canvas.draw_graph(self.master.graph)
+
+    def run_dfs(self):
+        if not self.master.graph: return
+        start = simpledialog.askinteger("DFS", "BaÅŸlangÄ±Ã§ ID:")
+        if start and start in self.master.graph.nodes:
+            order = DFS.run(self.master.graph, start)
+            self.master.node_info_panel.show_order("DFS", order, self.master.graph)
+            self.master.graph_canvas.draw_graph(self.master.graph)
+
+    def load_json(self):
+        from src.graph import Graph
+        path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        if path:
+            self.current_file_path = path
+            self.master.graph = Graph()
+            self.master.graph.load_from_json(path)
+            self.master.graph_canvas.draw_graph(self.master.graph)
+
+    def save_to_json(self):
+        if not self.master.graph or not self.current_file_path: return
+        try:
+            data = {"nodes": [], "edges": []}
+            for nid, node in self.master.graph.nodes.items():
+                data["nodes"].append({"id": nid, "name": node.name, "properties": node.properties})
+                for neighbor in node.neighbors:
+                    if nid < neighbor: data["edges"].append({"source": nid, "target": neighbor})
+            with open(self.current_file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            messagebox.showinfo("BaÅŸarÄ±lÄ±", "ğŸ’¾ Kaydedildi!")
+        except Exception as e:
+            messagebox.showerror("Hata", str(e))
+
+    def update_node_ui(self):
+        if not self.master.graph: return
+        nid = simpledialog.askinteger("GÃ¼ncelle", "ID:")
+        if nid in self.master.graph.nodes:
+            node = self.master.graph.nodes[nid]
+            new_name = simpledialog.askstring("Ä°sim", "Yeni:", initialvalue=node.name)
+            try:
+                a = simpledialog.askinteger("Puan", "Aktiflik:", initialvalue=node.properties.get("aktiflik", 50))
+                e = simpledialog.askinteger("Puan", "EtkileÅŸim:", initialvalue=node.properties.get("etkilesim", 20))
+                b = len(node.neighbors)
+                node.name = new_name
+                node.properties = {"aktiflik": a, "etkilesim": e, "baglanti_sayisi": b}
+                self.master.graph_canvas.draw_graph(self.master.graph)
+            except:
+                pass
+
+    def run_degree(self):
+        if not self.master.graph: return
+        top_5 = Centrality.top_k_degree_nodes(self.master.graph, k=5)
+        self.master.node_info_panel.show_degree_table(self.master.graph, top_5)
+
+    def run_components(self):
+        if not self.master.graph: return
+        res = BagliBilesenler(self.master.graph).calistir()
+        self.master.node_info_panel.show_components(res["gruplar"])
+
+    def run_welsh_powell(self):
+        if not self.master.graph: return
+        colors = WelshPowell.color_graph(self.master.graph)
+        self.master.graph_canvas.draw_graph(self.master.graph, colors)
+        self.master.node_info_panel.show_message("ğŸ¨ Boyama TamamlandÄ±!")
+
+    def add_node_ui(self):
+        if not self.master.graph: return
+        new_id = simpledialog.askinteger("Yeni", "ID:")
+        if new_id is not None:
+            if new_id in self.master.graph.nodes:
+                messagebox.showerror("Hata", "ID kullanÄ±mda!")
+                return
+            name = simpledialog.askstring("Yeni", "Ad Soyad:")
+            if name:
+                from src.graph import Node
+                self.master.graph.nodes[new_id] = Node(new_id, name, properties={"aktiflik": 50, "etkilesim": 20,
+                                                                                 "baglanti_sayisi": 0})
+                self.master.graph_canvas.positions = {}
+                self.master.graph_canvas.draw_graph(self.master.graph)
+
+    def delete_node_ui(self):
+        if not self.master.graph: return
+        nid = simpledialog.askinteger("Sil", "ID:")
+        if nid in self.master.graph.nodes:
+            for n in self.master.graph.nodes.values():
+                if nid in n.neighbors: n.neighbors.remove(nid)
+            del self.master.graph.nodes[nid]
+            self.master.graph_canvas.positions = {}
+            self.master.graph_canvas.delete("all")
+            self.master.graph_canvas.draw_graph(self.master.graph)
+
+    def add_edge_ui(self):
+        if not self.master.graph: return
+        id1, id2 = simpledialog.askinteger("BaÄŸ", "ID 1:"), simpledialog.askinteger("BaÄŸ", "ID 2:")
+        if id1 and id2 and id1 in self.master.graph.nodes and id2 in self.master.graph.nodes:
+            if id2 not in self.master.graph.nodes[id1].neighbors:
+                self.master.graph.nodes[id1].neighbors.append(id2)
+                self.master.graph.nodes[id2].neighbors.append(id1)
+                self.master.graph_canvas.draw_graph(self.master.graph)
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\ui\graph_canvas.py
+=============================
+import tkinter as tk
+import math
+from src.utils import get_dynamic_weight
+
+
+class GraphCanvas(tk.Canvas):
+    def __init__(self, master):
+        super().__init__(master, bg="white", highlightthickness=0)
+        self.positions = {}
+        self.color_palette = ["#1f6feb", "#28a745", "#e74c3c", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c"]
+        self.bind("<Motion>", self.on_mouse_move)
+
+    def draw_graph(self, graph, colors=None, highlight_path=None):
+        self.graph = graph
+        self.delete("all")
+        if not graph or not graph.nodes: return
+
+        nodes = list(graph.nodes.keys())
+        w = self.winfo_width() if self.winfo_width() > 1 else 600
+        h = self.winfo_height() if self.winfo_height() > 1 else 600
+        cx, cy = w / 2, h / 2
+        r = min(cx, cy) * 0.7
+
+        for i, nid in enumerate(nodes):
+            angle = 2 * math.pi * i / len(nodes)
+            self.positions[nid] = (cx + r * math.cos(angle), cy + r * math.sin(angle))
+
+        path_edges = set()
+        if highlight_path and len(highlight_path) > 1:
+            for i in range(len(highlight_path) - 1):
+                u, v = highlight_path[i], highlight_path[i + 1]
+                path_edges.add(tuple(sorted((u, v))))
+
+        for nid, node in graph.nodes.items():
+            x1, y1 = self.positions[nid]
+            for neighbor in node.neighbors:
+                if neighbor in self.positions and nid < neighbor:
+                    x2, y2 = self.positions[neighbor]
+                    is_path = tuple(sorted((nid, neighbor))) in path_edges
+                    l_color = "#1f6feb" if is_path else "#d1d5da"
+                    l_width = 4 if is_path else 2
+                    tag = f"edge_{nid}_{neighbor}"
+                    self.create_line(x1, y1, x2, y2, fill=l_color, width=l_width, tags=(tag, "edge"))
+
+        for nid, (x, y) in self.positions.items():
+            if colors and nid in colors:
+                base_color = self.color_palette[colors[nid] % len(self.color_palette)]
+            elif highlight_path and nid in highlight_path:
+                base_color = "#28a745"
+            else:
+                base_color = "#1f6feb"
+
+            tag = f"node_{nid}"
+            self.create_oval(x - 14, y - 14, x + 14, y + 14, fill="white", outline=base_color, width=2,
+                             tags=(tag, "node"))
+            self.create_text(x, y, text=str(nid), fill="black", font=("Arial", 9, "bold"), tags=(tag, "node"))
+
+    def on_mouse_move(self, event):
+        self.hide_tooltip()
+        item = self.find_closest(event.x, event.y)
+        tags = self.gettags(item)
+
+        for tag in tags:
+            if tag.startswith("node_"):
+                nid = int(tag.split("_")[1])
+                nx, ny = self.positions[nid]
+                if math.sqrt((event.x - nx) ** 2 + (event.y - ny) ** 2) <= 15:
+                    self.show_node_tooltip(event.x, event.y, nid)
+                    return
+
+        overlapping = self.find_overlapping(event.x - 2, event.y - 2, event.x + 2, event.y + 2)
+        for item in overlapping:
+            tags = self.gettags(item)
+            for tag in tags:
+                if tag.startswith("edge_"):
+                    parts = tag.split("_")
+                    u, v = int(parts[1]), int(parts[2])
+                    self.show_edge_tooltip(event.x, event.y, u, v)
+                    return
+
+    def show_node_tooltip(self, x, y, nid):
+        if not hasattr(self, 'graph') or nid not in self.graph.nodes: return
+
+        node = self.graph.nodes[nid]
+        props = node.properties
+
+        gercek_baglanti = len(node.neighbors)
+
+        text = (f"ID: {nid}\nÄ°sim: {node.name}\n"
+                f"Aktiflik: {props.get('aktiflik', 0)}\n"
+                f"EtkileÅŸim: {props.get('etkilesim', 0)}\n"
+                f"BaÄŸlantÄ± Skoru: {gercek_baglanti}")
+
+        self._create_tooltip_box(x, y, text, 95)
+
+    def show_edge_tooltip(self, x, y, u, v):
+        if not hasattr(self, 'graph') or u not in self.graph.nodes or v not in self.graph.nodes:
+            return
+
+        node_u = self.graph.nodes[u]
+        node_v = self.graph.nodes[v]
+
+        maliyet = get_dynamic_weight(node_u, node_v)
+
+        text = f"Yol: {u} â†” {v}\nMaliyet: {maliyet}"
+        self._create_tooltip_box(x, y, text, 50)
+
+    def _create_tooltip_box(self, x, y, text, h):
+        ox, oy = 15, 15
+        self.tooltip_rect = self.create_rectangle(
+            x + ox, y + oy, x + ox + 160, y + oy + h,
+            fill="#fdf6e3", outline="#657b83", width=1
+        )
+        self.tooltip_text = self.create_text(
+            x + ox + 8, y + oy + 8,
+            text=text, anchor="nw",
+            font=("Arial", 9), fill="#073642"
+        )
+
+    def hide_tooltip(self):
+        if hasattr(self, 'tooltip_rect'):
+            self.delete(self.tooltip_rect)
+            delattr(self, 'tooltip_rect')
+        if hasattr(self, 'tooltip_text'):
+            self.delete(self.tooltip_text)
+            delattr(self, 'tooltip_text')
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\ui\main_window.py
+=============================
+import customtkinter as ctk
+from ui.control_panel import ControlPanel
+from ui.graph_canvas import GraphCanvas
+from ui.node_info_panel import NodeInfoPanel
+
+
+class MainWindow(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("KOU | Network Intelligence")
+        self.geometry("1500x900")
+        self.configure(fg_color="#010409")
+
+        self.grid_columnconfigure(0, weight=0, minsize=280)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_columnconfigure(2, weight=1, minsize=450)
+
+        self.grid_rowconfigure(0, weight=1)
+
+        self.control_panel = ControlPanel(self)
+        self.control_panel.grid(row=0, column=0, sticky="nsew")
+
+        self.graph_card = ctk.CTkFrame(self, corner_radius=15, fg_color="white", border_width=1, border_color="#30363D")
+        self.graph_card.grid(row=0, column=1, sticky="nsew", padx=30, pady=30)
+
+        self.graph_canvas = GraphCanvas(self.graph_card)
+        self.graph_canvas.pack(fill="both", expand=True, padx=2, pady=2)
+
+        self.node_info_panel = NodeInfoPanel(self)
+        self.node_info_panel.grid(row=0, column=2, sticky="nsew", padx=(0, 25), pady=25)
+
+        self.graph = None
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\ui\node_info_panel.py
+=============================
+import customtkinter as ctk
+
+
+class NodeInfoPanel(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master, corner_radius=22, fg_color=("#ffffff", "#1a1c1e"), border_width=1,
+                         border_color="#2d2d2d")
+
+        self.badge_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.badge_frame.pack(fill="x", padx=20, pady=(15, 5))
+
+        self.container = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.container.pack(fill="both", expand=True, padx=10, pady=5)
+
+    def clear_panel(self):
+        for widget in self.container.winfo_children():
+            widget.destroy()
+
+    def show_order(self, alg_name, order, graph):
+        self.clear_panel()
+
+        title_icon = "ğŸ”" if alg_name == "BFS" else "ğŸ”"
+        header = ctk.CTkLabel(self.container, text=f"{title_icon} {alg_name} TARAMA SONUCU",
+                              font=("Roboto", 15, "bold"), text_color="#3498db")
+        header.pack(pady=(10, 20))
+
+        list_header = ctk.CTkFrame(self.container, fg_color="#2d2d2d", height=35, corner_radius=8)
+        list_header.pack(fill="x", padx=10, pady=(0, 10))
+        ctk.CTkLabel(list_header, text="AdÄ±m", font=("Roboto", 11, "bold"), text_color="#95a5a6").pack(side="left",
+                                                                                                       padx=15)
+        ctk.CTkLabel(list_header, text="Ziyaret Edilen DÃ¼ÄŸÃ¼m", font=("Roboto", 11, "bold"), text_color="#95a5a6").pack(
+            side="right", padx=15)
+
+        for i, nid in enumerate(order, 1):
+            row = ctk.CTkFrame(self.container, fg_color="transparent")
+            row.pack(fill="x", padx=10, pady=2)
+
+            step_box = ctk.CTkLabel(row, text=f"{i}", font=("Roboto", 12, "bold"),
+                                    fg_color="#34495e", text_color="white", width=30, corner_radius=6)
+            step_box.pack(side="left", padx=5)
+
+            node_name = graph.nodes[nid].name if nid in graph.nodes else f"DÃ¼ÄŸÃ¼m {nid}"
+            node_lbl = ctk.CTkLabel(row, text=f"{node_name}", font=("Roboto", 13))
+            node_lbl.pack(side="left", padx=10)
+
+            id_badge = ctk.CTkLabel(row, text=f"ID: {nid}", font=("Roboto", 11, "bold"),
+                                    text_color="#2ecc71", fg_color="#1e2f24", corner_radius=8, padx=10)
+            id_badge.pack(side="right", padx=5)
+
+            line = ctk.CTkFrame(self.container, fg_color="#2d2d2d", height=1)
+            line.pack(fill="x", padx=15, pady=2)
+
+    def show_path(self, alg_name, path, cost):
+        self.clear_panel()
+        ctk.CTkLabel(self.container, text=f"ğŸ“ {alg_name} EN KISA YOL",
+                     font=("Roboto", 15, "bold"), text_color="#e74c3c").pack(pady=(10, 10))
+
+        cost_frame = ctk.CTkFrame(self.container, fg_color="#c0392b", corner_radius=10)
+        cost_frame.pack(pady=5)
+        ctk.CTkLabel(cost_frame, text=f"TOPLAM MALÄ°YET: {cost:.2f}",
+                     font=("Roboto", 12, "bold"), text_color="white", padx=15).pack()
+
+        self.add_separator()
+
+        for i, step in enumerate(path):
+            row = ctk.CTkFrame(self.container, fg_color="transparent")
+            row.pack(fill="x", padx=20)
+
+            prefix = "ğŸ" if i == 0 else "â†“"
+            ctk.CTkLabel(row, text=prefix, font=("Roboto", 16)).pack(pady=2)
+
+            step_lbl = ctk.CTkLabel(row, text=str(step), font=("Roboto", 13, "bold"), text_color="#ecf0f1")
+            step_lbl.pack(pady=2)
+
+    def show_degree_table(self, graph, sorted_list):
+        self.clear_panel()
+        ctk.CTkLabel(self.container, text="ğŸ“Š EN ETKÄ°LÄ° 5 Ã–ÄRENCÄ°",
+                     font=("Roboto", 15, "bold"), text_color="#f1c40f").pack(pady=(10, 20))
+
+        for i, (nid, val) in enumerate(sorted_list, 1):
+            node = graph.nodes[nid]
+            row = ctk.CTkFrame(self.container, fg_color="#1c1c1c", corner_radius=12)
+            row.pack(fill="x", padx=10, pady=5, ipady=5)
+
+            rank_lbl = ctk.CTkLabel(row, text=str(i), font=("Roboto", 18, "bold"),
+                                    text_color="#f1c40f", width=40)
+            rank_lbl.pack(side="left", padx=10)
+
+            name_lbl = ctk.CTkLabel(row, text=node.name, font=("Roboto", 13, "bold"), anchor="w")
+            name_lbl.pack(side="left", padx=5)
+
+            id_badge = ctk.CTkLabel(row, text=f"ID: {nid}", font=("Roboto", 11, "bold"),
+                                    text_color="#2ecc71", fg_color="#1e2f24", corner_radius=8, padx=10)
+            id_badge.pack(side="left", padx=10)
+
+            count = len(node.neighbors)
+            badge = ctk.CTkLabel(row, text=f"{count} BaÄŸlantÄ±", font=("Roboto", 11, "bold"),
+                                 fg_color="#3498db", text_color="white", corner_radius=8, padx=10)
+            badge.pack(side="right", padx=15)
+
+    def show_components(self, groups):
+        self.clear_panel()
+        ctk.CTkLabel(self.container, text="ğŸ”— BAÄLI BÄ°LEÅEN ANALÄ°ZÄ°",
+                     font=("Roboto", 15, "bold"), text_color="#9b59b6").pack(pady=(10, 20))
+
+        for i, group in enumerate(groups, 1):
+            box = ctk.CTkFrame(self.container, fg_color="#1c1c1c", corner_radius=12, border_width=1,
+                               border_color="#2d2d2d")
+            box.pack(fill="x", padx=10, pady=8, ipady=5)
+
+            top_row = ctk.CTkFrame(box, fg_color="transparent")
+            top_row.pack(fill="x", padx=12, pady=(8, 2))
+
+            ctk.CTkLabel(top_row, text=f"TOPLULUK {i}", font=("Roboto", 12, "bold"), text_color="#9b59b6").pack(
+                side="left")
+
+            count_badge = ctk.CTkLabel(top_row, text=f"{len(group)} Ãœye", font=("Roboto", 10, "bold"),
+                                       fg_color="#34495e", text_color="white", corner_radius=6, padx=8)
+            count_badge.pack(side="right")
+
+            line = ctk.CTkFrame(box, fg_color="#2d2d2d", height=1)
+            line.pack(fill="x", padx=12, pady=8)
+
+            members_text = ", ".join(map(str, group))
+            members_lbl = ctk.CTkLabel(box, text=members_text, font=("Roboto", 13),
+                                       wraplength=380, text_color="#ecf0f1", justify="left")
+            members_lbl.pack(padx=15, pady=(2, 12), anchor="w")
+
+    def add_separator(self):
+        line = ctk.CTkFrame(self.container, fg_color="#2d2d2d", height=2)
+        line.pack(fill="x", padx=20, pady=10)
+
+    def show_message(self, text):
+        self.clear_panel()
+        ctk.CTkLabel(self.container, text=text, font=("Roboto", 13),
+                     wraplength=200, text_color="#bdc3c7").pack(pady=50)
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\ui\__init__.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\utils\timer.py
+=============================
+# Algoritma sÃ¼re Ã¶lÃ§Ã¼mÃ¼
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\utils\validators.py
+=============================
+# HatalÄ± veri kontrolÃ¼
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\utils\__init__.py
+=============================
+
+=============================
+DOSYA: C:\Users\Furkan\Desktop\Uni-Sosyal-Medya-YEKTA34-member1\main.py
+=============================
+
+from src.graph import Graph
+from algorithms.welsh_powell import WelshPowell
+from ui.main_window import MainWindow
+graph = Graph()
+graph.load_from_json("data_samples/small_data.json")
+
+colors = WelshPowell.color_graph(graph)
+
+
+for node_id, node in graph.nodes.items():
+    for neighbor_id in node.neighbors:
+        if colors[node_id] == colors[neighbor_id]:
+            print("âŒ HATA:", node_id, "ile", neighbor_id, "aynÄ± renkte")
+            break
+else:
+    print("âœ… TEST BAÅARILI: KomÅŸu dÃ¼ÄŸÃ¼mler farklÄ± renkte")
+
+    print("\nWelshâ€“Powell Boyama Tablosu\n")
+    print(f"{'ID':<5}{'Ä°sim':<10}{'KomÅŸular':<20}{'Renk'}")
+    print("-" * 45)
+
+    for node_id, color in colors.items():
+        node = graph.nodes[node_id]
+        print(f"{node_id:<5}{node.name:<10}{str(node.neighbors):<20}{color}")
+
+
+
+
+def main():
+    app = MainWindow()
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()
+
